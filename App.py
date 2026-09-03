@@ -1,170 +1,107 @@
-import streamlit as st
+import io
 import pandas as pd
-from io import BytesIO
+import streamlit as st
 
-# ==========================================
-# CẤU HÌNH TRANG
-# ==========================================
-st.set_page_config(
-    page_title="Quản lý khách hàng - MSB",
-    page_icon="👤",
-    layout="wide"
-)
+# Cấu hình trang
+st.set_page_config(page_title="MSB - Quản Lý Khách Hàng", layout="wide")
 
-# ==========================================
-# KHỞI TẠO DANH SÁCH KHÁCH HÀNG
-# ==========================================
-if "customers" not in st.session_state:
-    st.session_state.customers = []
-
-# ==========================================
-# HÀM XUẤT EXCEL
-# ==========================================
-def export_excel():
-    df = pd.DataFrame(st.session_state.customers)
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Khách hàng")
-    return output.getvalue()
-
-# ==========================================
-# HIỂN THỊ LOGO MSB Ở PHÍA TRÊN
-# ==========================================
-# Hiển thị logo MSB ở phần đầu giao diện
-st.image("image_06bc46.png", width=250)
-
-# ==========================================
-# MENU SIDEBAR
-# ==========================================
-st.sidebar.title("📋 MENU")
-page = st.sidebar.radio(
-    "Chọn trang",
-    [
-        "👤 Nhập khách hàng",
-        "🔐 Admin"
-    ]
-)
-
-# ==========================================
-# TRANG NHẬP KHÁCH HÀNG
-# ==========================================
-if page == "👤 Nhập khách hàng":
-    st.title("👤 THÔNG TIN KHÁCH HÀNG")
-    st.write("Vui lòng nhập đầy đủ thông tin khách hàng bên dưới.")
-    st.divider()
-
-    # --------------------------------------
-    # FORM NHẬP THÔNG TIN
-    # --------------------------------------
-    phone = st.text_input(
-        "📱 Số điện thoại",
-        placeholder="Nhập số điện thoại"
-    )
-    name = st.text_input(
-        "👤 Tên khách hàng",
-        placeholder="Nhập tên khách hàng"
-    )
-    address = st.text_input(
-        "📍 Địa chỉ",
-        placeholder="Nhập địa chỉ"
-    )
-    
-    # Bổ sung 2 trường mới theo yêu cầu
-    income = st.number_input(
-        "💵 Thu nhập / tháng (VNĐ)",
-        min_value=0,
-        step=1000000,
-        format="%d"
-    )
-    has_credit_card = st.radio(
-        "💳 Đã có thẻ tín dụng chưa?",
-        ["Chưa có", "Đã có"],
-        horizontal=True
+# Khởi tạo dữ liệu lưu trữ tạm thời trong Session State
+if "customer_data" not in st.session_state:
+    st.session_state.customer_data = pd.DataFrame(
+        columns=[
+            "Số điện thoại",
+            "Tên khách hàng",
+            "Địa chỉ",
+            "Thu nhập/tháng",
+            "Có thẻ tín dụng chưa",
+            "Ghi chú",
+        ]
     )
 
-    note = st.text_area(
-        "📝 Ghi chú",
-        placeholder="Nhập ghi chú"
-    )
-    st.divider()
+# 1. Hiển thị Logo MSB ở trên cùng
+# Lưu ý: Thay 'image_10b869.png' bằng đường dẫn thực tế đến file ảnh logo MSB
+try:
+    st.image("image_10b869.png", width=250)
+except Exception:
+    st.title("MSB BANK")
 
-    # --------------------------------------
-    # NÚT LƯU THÔNG TIN
-    # --------------------------------------
-    if st.button("💾 LƯU THÔNG TIN", type="primary", use_container_width=True):
-        if phone.strip() == "":
-            st.error("❌ Vui lòng nhập số điện thoại.")
-        elif name.strip() == "":
-            st.error("❌ Vui lòng nhập tên khách hàng.")
-        else:
-            # Tạo bản ghi khách hàng mới bao gồm các trường bổ sung
-            customer = {
-                "Số điện thoại": phone.strip(),
-                "Tên khách hàng": name.strip(),
-                "Địa chỉ": address.strip(),
-                "Thu nhập/tháng (VNĐ)": f"{income:,}",
-                "Thẻ tín dụng": has_credit_card,
-                "Ghi chú": note.strip()
-            }
-            # Lưu vào session_state
-            st.session_state.customers.append(customer)
-            st.success("✅ Đã lưu thông tin khách hàng thành công!")
+st.write("---")
 
-# ==========================================
-# TRANG ADMIN
-# ==========================================
-elif page == "🔐 Admin":
-    st.title("🔐 ADMIN")
-    st.divider()
+# Tạo 2 tab: Form nhập liệu và Trang Admin
+tab_form, tab_admin = st.tabs(["📝 Form Điền Thông Tin", "🔒 Trang Admin"])
 
-    # --------------------------------------
-    # ĐĂNG NHẬP ADMIN
-    # --------------------------------------
-    if "admin_logged_in" not in st.session_state:
-        st.session_state.admin_logged_in = False
+# ================= TAB 1: FORM NHẬP THÔNG TIN =================
+with tab_form:
+    st.header("Thông Tin Khách Hàng")
 
-    if not st.session_state.admin_logged_in:
-        password = st.text_input("🔑 Mật khẩu", type="password")
-        if st.button("ĐĂNG NHẬP", type="primary"):
-            if password == "123456":
-                st.session_state.admin_logged_in = True
-                st.rerun()
-            else:
-                st.error("❌ Sai mật khẩu.")
+    with st.form("customer_form", clear_on_submit=True):
+        col1, col2 = st.columns(2)
 
-    # --------------------------------------
-    # GIAO DIỆN ADMIN KHI ĐÃ ĐĂNG NHẬP
-    # --------------------------------------
-    else:
-        col1, col2 = st.columns([5, 1])
         with col1:
-            st.subheader("📊 DANH SÁCH KHÁCH HÀNG")
+            phone = st.text_input("Số điện thoại *", placeholder="0901234567")
+            name = st.text_input("Tên khách hàng *", placeholder="Nguyễn Văn A")
+            address = st.text_input("Địa chỉ", placeholder="Quận 1, TP.HCM")
+
         with col2:
-            if st.button("🚪 Đăng xuất"):
-                st.session_state.admin_logged_in = False
-                st.rerun()
-        
-        st.divider()
-
-        # Kiểm tra danh sách
-        if len(st.session_state.customers) == 0:
-            st.info("📭 Chưa có dữ liệu khách hàng.")
-        else:
-            df = pd.DataFrame(st.session_state.customers)
-
-            st.metric("👥 Tổng số khách hàng", len(df))
-            st.divider()
-
-            # Hiển thị bảng danh sách
-            st.dataframe(df, use_container_width=True, hide_index=True)
-            st.divider()
-
-            # Xuất file Excel
-            excel_file = export_excel()
-            st.download_button(
-                label="📥 XUẤT FILE EXCEL",
-                data=excel_file,
-                file_name="danh_sach_khach_hang_MSB.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
+            income = st.number_input(
+                "Thu nhập/tháng (VNĐ)",
+                min_value=0,
+                step=1000000,
+                format="%d",
             )
+            has_credit_card = st.radio(
+                "Có thẻ tín dụng chưa?",
+                options=["Chưa", "Rồi"],
+                horizontal=True,
+            )
+
+        note = st.text_area("Ghi chú", placeholder="Nhu cầu mở thẻ, vay...")
+
+        submitted = st.form_submit_button("Lưu lại")
+
+        if submitted:
+            if not phone or not name:
+                st.error("Vui lòng điền đầy đủ Số điện thoại và Tên khách hàng!")
+            else:
+                new_entry = {
+                    "Số điện thoại": phone,
+                    "Tên khách hàng": name,
+                    "Địa chỉ": address,
+                    "Thu nhập/tháng": f"{income:,} VNĐ",
+                    "Có thẻ tín dụng chưa": has_credit_card,
+                    "Ghi chú": note,
+                }
+                # Thêm dữ liệu mới vào DataFrame
+                st.session_state.customer_data = pd.concat(
+                    [
+                        st.session_state.customer_data,
+                        pd.DataFrame([new_entry]),
+                    ],
+                    ignore_index=True,
+                )
+                st.success("Đã lưu thông tin khách hàng thành công!")
+
+# ================= TAB 2: TRANG ADMIN =================
+with tab_admin:
+    st.header("Quản Lý Dữ Liệu Khách Hàng")
+
+    df = st.session_state.customer_data
+
+    if df.empty:
+        st.info("Chưa có dữ liệu khách hàng nào được lưu.")
+    else:
+        # Hiển thị bảng dữ liệu
+        st.dataframe(df, use_container_width=True)
+
+        # Tạo file Excel để xuất
+        buffer = io.BytesIO()
+        with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+            df.to_excel(writer, index=False, sheet_name="KhachHang")
+
+        # Nút xuất Excel
+        st.download_button(
+            label="📥 Xuất File Excel",
+            data=buffer.getvalue(),
+            file_name="danh_sach_khach_hang_MSB.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
