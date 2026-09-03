@@ -1,3 +1,4 @@
+import io
 import os
 import pandas as pd
 import streamlit as st
@@ -5,8 +6,13 @@ import streamlit as st
 # Đường dẫn file Excel dùng để lưu trữ dữ liệu vĩnh viễn
 EXCEL_FILE = "danh_sach_khach_hang.xlsx"
 
+# Link hình ảnh Logo MSB (Bạn có thể thay đổi đường dẫn URL hoặc file ảnh cục bộ tại đây)
+IMAGE_URL_MSB = "image_10b869.png"
+
 # Cấu hình trang
-st.set_page_config(page_title="MSB - Quản Lý Khách Hàng", layout="wide")
+st.set_page_config(
+    page_title="MSB - Quản Lý Khách Hàng", page_icon="🏦", layout="wide"
+)
 
 
 # Hàm tải dữ liệu từ Excel
@@ -35,15 +41,28 @@ def save_data(df):
 if "customer_data" not in st.session_state:
     st.session_state.customer_data = load_data()
 
-# 1. Hiển thị Logo MSB ở trên cùng
-try:
-    st.image("image_10b869.png", width=250)
-except Exception:
-    st.title("MSB BANK")
+# =========================================================
+# 1. HIỂN THỊ CHỮ MSB TRÊN VÀ LOGO CĂN GIỮA BÊN DƯỚI
+# =========================================================
+st.markdown(
+    "<h1 style='text-align: center; color: #EB1C24;'>NGÂN HÀNG MSB</h1>",
+    unsafe_allow_html=True,
+)
+
+# Sử dụng 3 cột để căn giữa hình ảnh
+col_left, col_center, col_right = st.columns([1, 2, 1])
+
+with col_center:
+    try:
+        st.image(IMAGE_URL_MSB, use_container_width=True)
+    except Exception:
+        st.warning("Không tìm thấy file hình ảnh logo MSB.")
 
 st.write("---")
 
-# Tạo 2 tab: Form nhập liệu và Trang Admin
+# =========================================================
+# 2. TẠO TABS CHỨC NĂNG
+# =========================================================
 tab_form, tab_admin = st.tabs(["📝 Form Điền Thông Tin", "🔒 Trang Admin"])
 
 # ================= TAB 1: FORM NHẬP THÔNG TIN =================
@@ -119,7 +138,7 @@ with tab_admin:
     if pin_input == "123456":
         st.success("Xác thực thành công!")
 
-        # Luôn tải lại dữ liệu mới nhất từ file
+        # Luôn tải lại dữ liệu mới nhất từ file Excel
         df = load_data()
 
         if df.empty:
