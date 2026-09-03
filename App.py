@@ -1,25 +1,41 @@
-import io
+import os
 import pandas as pd
 import streamlit as st
+
+# Đường dẫn file Excel dùng để lưu trữ dữ liệu vĩnh viễn
+EXCEL_FILE = "danh_sach_khach_hang.xlsx"
 
 # Cấu hình trang
 st.set_page_config(page_title="MSB - Quản Lý Khách Hàng", layout="wide")
 
-# Khởi tạo dữ liệu lưu trữ tạm thời trong Session State
+
+# Hàm tải dữ liệu từ Excel
+def load_data():
+    if os.path.exists(EXCEL_FILE):
+        return pd.read_excel(EXCEL_FILE)
+    else:
+        return pd.DataFrame(
+            columns=[
+                "Số điện thoại",
+                "Tên khách hàng",
+                "Địa chỉ",
+                "Thu nhập/tháng",
+                "Có thẻ tín dụng chưa",
+                "Ghi chú",
+            ]
+        )
+
+
+# Hàm lưu dữ liệu vào Excel
+def save_data(df):
+    df.to_excel(EXCEL_FILE, index=False, engine="openpyxl")
+
+
+# Khởi tạo dữ liệu trong Session State từ file Excel
 if "customer_data" not in st.session_state:
-    st.session_state.customer_data = pd.DataFrame(
-        columns=[
-            "Số điện thoại",
-            "Tên khách hàng",
-            "Địa chỉ",
-            "Thu nhập/tháng",
-            "Có thẻ tín dụng chưa",
-            "Ghi chú",
-        ]
-    )
+    st.session_state.customer_data = load_data()
 
 # 1. Hiển thị Logo MSB ở trên cùng
-# Lưu ý: Thay 'image_10b869.png' bằng đường dẫn thực tế đến file ảnh logo MSB
 try:
     st.image("image_10b869.png", width=250)
 except Exception:
@@ -71,7 +87,8 @@ with tab_form:
                     "Có thẻ tín dụng chưa": has_credit_card,
                     "Ghi chú": note,
                 }
-                # Thêm dữ liệu mới vào DataFrame
+
+                # Cập nhật DataFrame trong session state
                 st.session_state.customer_data = pd.concat(
                     [
                         st.session_state.customer_data,
@@ -79,29 +96,48 @@ with tab_form:
                     ],
                     ignore_index=True,
                 )
-                st.success("Đã lưu thông tin khách hàng thành công!")
+
+                # Lưu ngay vào file Excel
+                save_data(st.session_state.customer_data)
+
+                st.success(
+                    "Đã lưu thông tin khách hàng thành công vào file Excel!"
+                )
 
 # ================= TAB 2: TRANG ADMIN =================
 with tab_admin:
     st.header("Quản Lý Dữ Liệu Khách Hàng")
 
-    df = st.session_state.customer_data
+    # Kiểm tra mã PIN xác thực
+    pin_input = st.text_input(
+        "Nhập mã PIN để truy cập trang Admin:",
+        type="password",
+        max_chars=6,
+        placeholder="******",
+    )
 
-    if df.empty:
-        st.info("Chưa có dữ liệu khách hàng nào được lưu.")
-    else:
-        # Hiển thị bảng dữ liệu
-        st.dataframe(df, use_container_width=True)
+    if pin_input == "123456":
+        st.success("Xác thực thành công!")
 
-        # Tạo file Excel để xuất
-        buffer = io.BytesIO()
-        with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-            df.to_excel(writer, index=False, sheet_name="KhachHang")
+        # Luôn tải lại dữ liệu mới nhất từ file
+        df = load_data()
 
-        # Nút xuất Excel
-        st.download_button(
-            label="📥 Xuất File Excel",
-            data=buffer.getvalue(),
-            file_name="danh_sach_khach_hang_MSB.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
+        if df.empty:
+            st.info("Chưa có dữ liệu khách hàng nào được lưu.")
+        else:
+            # Hiển thị bảng dữ liệu
+            st.dataframe(df, use_container_width=True)
+
+            # Đọc file trực tiếp để hỗ trợ nút Tải xuống
+            with open(EXCEL_FILE, "rb") as f:
+                file_data = f.read()
+
+            st.download_button(
+                label="📥 Tải File Excel Khách Hàng",
+                data=file_data,
+                file_name="danh_sach_khach_hang_MSB.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+
+    elif pin_input != "":
+        st.error("Mã PIN không chính xác! Vui lòng thử lại.")
