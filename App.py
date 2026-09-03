@@ -1,4 +1,3 @@
-import io
 import os
 import pandas as pd
 import streamlit as st
@@ -6,11 +5,14 @@ import streamlit as st
 # Đường dẫn file Excel dùng để lưu trữ dữ liệu vĩnh viễn
 EXCEL_FILE = "danh_sach_khach_hang.xlsx"
 
-# 1. Cấu hình trang Streamlit
-st.set_page_config(
-    page_title="MSB - Quản Lý Khách Hàng", page_icon="🏦", layout="wide"
-)
+# Cấu hình trang
+st.set_page_config(page_title="MSB - Quản Lý Khách Hàng", layout="wide")
+import streamlit as st
 
+# Sử dụng đường dẫn ảnh trực tiếp
+logo_url = "https://msb.com.vn/documents/20121/0/logo-msb.png"  # Bạn có thể thay bằng link ảnh logo MSB bất kỳ
+
+st.image(logo_url, width=250)
 
 # Hàm tải dữ liệu từ Excel
 def load_data():
@@ -38,19 +40,15 @@ def save_data(df):
 if "customer_data" not in st.session_state:
     st.session_state.customer_data = load_data()
 
-# 2. Hiển thị Logo MSB ở trên cùng (Dùng URL online)
-logo_url = (
-    "https://upload.wikimedia.org/wikipedia/commons/2/25/Logo_MSB.png"  # Link ảnh logo MSB
-)
-
+# 1. Hiển thị Logo MSB ở trên cùng
 try:
-    st.image(logo_url, width=220)
+    st.image("image_10b869.png", width=250)
 except Exception:
-    st.title("🏦 MSB BANK")
+    st.title("MSB BANK")
 
 st.write("---")
 
-# 3. Tạo 2 tab: Form nhập liệu và Trang Admin
+# Tạo 2 tab: Form nhập liệu và Trang Admin
 tab_form, tab_admin = st.tabs(["📝 Form Điền Thông Tin", "🔒 Trang Admin"])
 
 # ================= TAB 1: FORM NHẬP THÔNG TIN =================
@@ -126,16 +124,16 @@ with tab_admin:
     if pin_input == "123456":
         st.success("Xác thực thành công!")
 
-        # Tải lại dữ liệu mới nhất từ file Excel
+        # Luôn tải lại dữ liệu mới nhất từ file
         df = load_data()
 
         if df.empty:
             st.info("Chưa có dữ liệu khách hàng nào được lưu.")
         else:
-            # Hiển thị bảng dữ liệu khách hàng
+            # Hiển thị bảng dữ liệu
             st.dataframe(df, use_container_width=True)
 
-            # Nút Tải file Excel
+            # Đọc file trực tiếp để hỗ trợ nút Tải xuống
             with open(EXCEL_FILE, "rb") as f:
                 file_data = f.read()
 
