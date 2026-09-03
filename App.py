@@ -7,12 +7,31 @@ EXCEL_FILE = "danh_sach_khach_hang.xlsx"
 
 # Cấu hình trang
 st.set_page_config(page_title="MSB - Quản Lý Khách Hàng", layout="wide")
+import os
+import pandas as pd
 import streamlit as st
 
-# Sử dụng đường dẫn ảnh trực tiếp
-logo_url = "https://msb.com.vn/documents/20121/0/logo-msb.png"  # Bạn có thể thay bằng link ảnh logo MSB bất kỳ
+EXCEL_FILE = "danh_sach_khach_hang.xlsx"
 
-st.image(logo_url, width=250)
+# Cấu hình trang
+st.set_page_config(page_title="MSB - Quản Lý Khách Hàng", layout="wide")
+
+# =========================================================
+# 👇 VỊ TRÍ CHÈN CÁCH 1 (HIỂN THỊ LOGO MSB) 👇
+# =========================================================
+logo_url = (
+    "https://msb.com.vn/documents/20121/0/logo-msb.png"  # Link ảnh logo MSB
+)
+
+try:
+    st.image(logo_url, width=250)
+except Exception:
+    st.title("🏦 MSB - NGÂN HÀNG HÀNG HẢI")
+# =========================================================
+
+st.write("---")
+
+# Các phần code phía dưới (load_data, các TAB form/admin) giữ nguyên...
 
 # Hàm tải dữ liệu từ Excel
 def load_data():
