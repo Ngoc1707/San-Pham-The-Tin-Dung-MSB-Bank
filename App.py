@@ -1,4 +1,4 @@
-import io
+    import io
 import os
 import pandas as pd
 import streamlit as st
@@ -16,28 +16,34 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Chèn CSS tùy chỉnh màu đỏ nhạt MSB (#FF4D4D) cho Sidebar và màu trắng cho chữ
+# Custom CSS cho Sidebar màu đỏ nhạt MSB (#FF4D4D)
 st.markdown(
     """
     <style>
-        /* Đổi màu nền Sidebar sang màu đỏ nhạt MSB */
+        /* Đổi màu nền thanh Sidebar sang màu đỏ nhạt MSB */
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #FF4D4D 0%, #E63946 100%) !important;
+            background-color: #FF4D4D !important;
         }
         
-        /* Đổi màu chữ, tiêu đề, icon và văn bản trong Sidebar sang màu trắng */
+        /* Đổi tất cả màu chữ, tiêu đề, văn bản trong Sidebar sang màu trắng */
         [data-testid="stSidebar"] *, 
         [data-testid="stSidebar"] label, 
         [data-testid="stSidebar"] p, 
-        [data-testid="stSidebar"] h2, 
-        [data-testid="stSidebar"] h4, 
-        [data-testid="stSidebar"] span {
+        [data-testid="stSidebar"] h3, 
+        [data-testid="stSidebar"] span,
+        [data-testid="stSidebar"] div {
             color: #FFFFFF !important;
         }
 
         /* Đổi màu đường kẻ ngang trong Sidebar */
         [data-testid="stSidebar"] hr {
-            border-color: rgba(255, 255, 255, 0.3) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        /* Tùy chỉnh hiệu ứng cho radio button/menu được chọn */
+        [data-testid="stSidebar"] [role="radiogroup"] > label:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-radius: 8px;
         }
     </style>
     """,
@@ -82,11 +88,11 @@ if "customer_data" not in st.session_state:
     st.session_state.customer_data = load_data()
 
 # ---------------------------------------------------------
-# 1. SIDEBAR (THANH MENU NỀN ĐỎ NHẠT BÊN TRÁI - KHÔNG DÙNG ẢNH)
+# 1. SIDEBAR (THANH MENU BÊN TRÁI NỀN ĐỎ NHẠT MSB)
 # ---------------------------------------------------------
 with st.sidebar:
-    st.markdown("<h2 style='text-align: center; font-weight: bold;'>NGÂN HÀNG MSB</h2>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center;'>Hệ thống Lead Management</h4>", unsafe_allow_html=True)
+    st.image(IMAGE_URL_MSB, use_container_width=True)
+    st.markdown("<h3 style='text-align: center;'>Hệ thống MSB Lead</h3>", unsafe_allow_html=True)
     st.write("---")
     
     st.write("📁 **MENU QUẢN LÝ**")
