@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 
 # ---------------------------------------------------------
-# CẤU HÌNH TRANG & CSS TÙY CHỈNH NỀN CAM CHO SIDEBAR
+# CẤU HÌNH TRANG & CSS TÙY CHỈNH NỀN ĐỎ NHẠT MSB CHO SIDEBAR
 # ---------------------------------------------------------
 EXCEL_FILE = "danh_sach_khach_hang_MSB.xlsx"
 IMAGE_URL_MSB = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/MSB_logo.svg/1200px-MSB_logo.svg.png"
@@ -16,27 +16,28 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Chèn CSS tùy chỉnh màu cam cho Sidebar và màu trắng cho chữ bên trong Sidebar
+# Chèn CSS tùy chỉnh màu đỏ nhạt MSB (#FF4D4D) cho Sidebar và màu trắng cho chữ
 st.markdown(
     """
     <style>
-        /* Đổi màu nền của Sidebar sang màu cam thương hiệu MSB */
+        /* Đổi màu nền Sidebar sang màu đỏ nhạt MSB */
         [data-testid="stSidebar"] {
-            background-color: #EA5404 !important;
+            background: linear-gradient(180deg, #FF4D4D 0%, #E63946 100%) !important;
         }
         
         /* Đổi màu chữ, tiêu đề, icon và văn bản trong Sidebar sang màu trắng */
         [data-testid="stSidebar"] *, 
         [data-testid="stSidebar"] label, 
         [data-testid="stSidebar"] p, 
-        [data-testid="stSidebar"] h3, 
+        [data-testid="stSidebar"] h2, 
+        [data-testid="stSidebar"] h4, 
         [data-testid="stSidebar"] span {
             color: #FFFFFF !important;
         }
 
         /* Đổi màu đường kẻ ngang trong Sidebar */
         [data-testid="stSidebar"] hr {
-            border-color: rgba(255, 255, 255, 0.4) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
         }
     </style>
     """,
@@ -81,7 +82,7 @@ if "customer_data" not in st.session_state:
     st.session_state.customer_data = load_data()
 
 # ---------------------------------------------------------
-# 1. SIDEBAR (THANH MENU NỀN CAM BÊN TRÁI - KHÔNG DÙNG ẢNH)
+# 1. SIDEBAR (THANH MENU NỀN ĐỎ NHẠT BÊN TRÁI - KHÔNG DÙNG ẢNH)
 # ---------------------------------------------------------
 with st.sidebar:
     st.markdown("<h2 style='text-align: center; font-weight: bold;'>NGÂN HÀNG MSB</h2>", unsafe_allow_html=True)
@@ -109,7 +110,7 @@ with st.sidebar:
 if menu == "➕ Thêm Lead mới":
     # TIÊU ĐỀ CHÍNH
     st.markdown(
-        "<h1 style='text-align: center; color: #E31837; font-weight: bold;'>NGÂN HÀNG MSB</h1>",
+        "<h1 style='text-align: center; color: #FF4D4D; font-weight: bold;'>NGÂN HÀNG MSB</h1>",
         unsafe_allow_html=True,
     )
 
