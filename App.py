@@ -4,9 +4,13 @@ import pandas as pd
 import streamlit as st
 
 # ---------------------------------------------------------
-# CẤU HÌNH TRANG & META TAGS ĐỂ HIỆN THỊ KHI GỬI LINK ZALO/FB
+# CẤU HÌNH TRANG & META TAGS ĐỂ HIỆN THỊ THUMBNAIL KHI GỬI LINK
 # ---------------------------------------------------------
 EXCEL_FILE = "danh_sach_khach_hang_MSB.xlsx"
+
+# Link ảnh trực tiếp (Đã chuyển đổi từ link Google Drive của bạn)
+# Nếu đổi ảnh khác, hãy thay YOUR_FILE_ID bằng ID file Google Drive của bạn
+IMAGE_PREVIEW_URL = "https://lh3.googleusercontent.com/d/9BWaNKUfu05hLMvxA"
 IMAGE_URL_MSB = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/MSB_logo.svg/1200px-MSB_logo.svg.png"
 
 st.set_page_config(
@@ -16,14 +20,25 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Chèn HTML Meta Tags để tạo thumbnail xem trước khi gửi link
+# Chèn HTML Meta Tags để ứng dụng nhắn tin (Zalo, FB, Telegram) đọc được Thumbnail khi chia sẻ link
 st.markdown(
     f"""
     <head>
+        <!-- Open Graph Meta Tags cho Facebook, Zalo, Messenger -->
         <meta property="og:title" content="MSB - Quản Lý Khách Hàng" />
-        <meta property="og:description" content="Hệ thống Quản lý & Tiếp nhận thông tin Khách hàng MSB" />
-        <meta property="og:image" content="{IMAGE_URL_MSB}" />
+        <meta property="og:description" content="Hệ thống Quản lý & Tiếp nhận thông tin Khách hàng MSB - Nhóm Ngọc Yên" />
+        <meta property="og:image" content="{IMAGE_PREVIEW_URL}" />
+        <meta property="og:image:secure_url" content="{IMAGE_PREVIEW_URL}" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:type" content="website" />
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="MSB - Quản Lý Khách Hàng" />
+        <meta name="twitter:description" content="Hệ thống Quản lý & Tiếp nhận thông tin Khách hàng MSB" />
+        <meta name="twitter:image" content="{IMAGE_PREVIEW_URL}" />
     </head>
     """,
     unsafe_allow_html=True
@@ -54,7 +69,7 @@ if "customer_data" not in st.session_state:
     st.session_state.customer_data = load_data()
 
 # ---------------------------------------------------------
-# 1. SIDEBAR (THANH MENU BÊN TRÁI GIỐNG MẪU ACB)
+# 1. SIDEBAR (THANH MENU BÊN TRÁI)
 # ---------------------------------------------------------
 with st.sidebar:
     st.image(IMAGE_URL_MSB, use_container_width=True)
@@ -77,10 +92,9 @@ with st.sidebar:
     st.caption("MSB Lead Manager - Nhóm Ngọc Yên\nPhát triển cho Khối KHCN MSB")
 
 # ---------------------------------------------------------
-# 2. MÀN HÌNH CHÍNH (XỬ LÝ THEO MENU)
+# 2. MÀN HÌNH CHÍNH
 # ---------------------------------------------------------
 if menu == "➕ Thêm Lead mới":
-    # TIÊU ĐỀ CHÍNH
     st.markdown(
         "<h1 style='text-align: center; color: #E31837; font-weight: bold;'>NGÂN HÀNG MSB</h1>",
         unsafe_allow_html=True,
