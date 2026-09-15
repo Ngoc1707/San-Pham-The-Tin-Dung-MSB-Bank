@@ -9,7 +9,7 @@ import streamlit as st
 EXCEL_FILE = "danh_sach_khach_hang_MSB.xlsx"
 
 # Link ảnh trực tiếp đã quy đổi từ Google Share Link của bạn
-IMAGE_URL_MSB = "https://lh3.googleusercontent.com/d/22HILnkRj7m9Sw3dh"
+IMAGE_URL_MSB = https://share.google/qeSVJLYdH4TTNVAfa
 
 st.set_page_config(
     page_title="MSB - Quản Lý Khách Hàng",
