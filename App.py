@@ -54,7 +54,7 @@ if "customer_data" not in st.session_state:
     st.session_state.customer_data = load_data()
 
 # ---------------------------------------------------------
-# 1. SIDEBAR (THANH MENU BÊN TRÁI GIỐNG MẪU ACB)
+# 1. SIDEBAR (THANH MENU BÊN TRÁI HIỂN THỊ LOGO MSB)
 # ---------------------------------------------------------
 with st.sidebar:
     st.image(IMAGE_URL_MSB, use_container_width=True)
@@ -80,7 +80,7 @@ with st.sidebar:
 # 2. MÀN HÌNH CHÍNH (XỬ LÝ THEO MENU)
 # ---------------------------------------------------------
 if menu == "➕ Thêm Lead mới":
-    # TIÊU ĐỀ CHÍNH
+    # TIÊU ĐỀ CHÍNH & LOGO
     st.markdown(
         "<h1 style='text-align: center; color: #E31837; font-weight: bold;'>NGÂN HÀNG MSB</h1>",
         unsafe_allow_html=True,
@@ -93,22 +93,26 @@ if menu == "➕ Thêm Lead mới":
         st.header("Thông Tin Khách Hàng")
 
         with st.form("customer_form", clear_on_submit=True):
-            phone = st.text_input("Số điện thoại *", placeholder="0901234567")
-            name = st.text_input("Tên khách hàng *", placeholder="Nguyễn Văn A")
-            address = st.text_input("Địa chỉ", placeholder="Quận 1, TP.HCM")
-            
-            income = st.number_input(
-                "Thu nhập/tháng (VNĐ)",
-                min_value=0,
-                step=1000000,
-                format="%d",
-            )
-            
-            has_credit_card = st.radio(
-                "Có thẻ tín dụng chưa?",
-                options=["Chưa", "Rồi"],
-                horizontal=True,
-            )
+            col1, col2 = st.columns(2)
+
+            with col1:
+                phone = st.text_input("Số điện thoại *", placeholder="0901234567")
+                name = st.text_input("Tên khách hàng *", placeholder="Nguyễn Văn A")
+                address = st.text_input("Địa chỉ", placeholder="Quận 1, TP.HCM")
+                
+            with col2:
+                income = st.number_input(
+                    "Thu nhập/tháng (VNĐ)",
+                    min_value=0,
+                    step=1000000,
+                    format="%d",
+                )
+                
+                has_credit_card = st.radio(
+                    "Có thẻ tín dụng chưa?",
+                    options=["Chưa", "Rồi"],
+                    horizontal=True,
+                )
 
             note = st.text_area("Ghi chú", placeholder="Nhu cầu mở thẻ, vay...")
 
