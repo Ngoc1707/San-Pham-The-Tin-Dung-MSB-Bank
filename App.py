@@ -4,10 +4,12 @@ import pandas as pd
 import streamlit as st
 
 # ---------------------------------------------------------
-# CẤU HÌNH TRANG & META TAGS ĐỂ HIỆN THỊ KHI GỬI LINK ZALO/FB
+# CẤU HÌNH TRANG & ĐƯỜNG DẪN DỮ LIỆU
 # ---------------------------------------------------------
 EXCEL_FILE = "danh_sach_khach_hang_MSB.xlsx"
-IMAGE_URL_MSB = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/MSB_logo.svg/1200px-MSB_logo.svg.png"
+
+# Link ảnh trực tiếp đã quy đổi từ Google Share Link của bạn
+IMAGE_URL_MSB = "https://lh3.googleusercontent.com/d/22HILnkRj7m9Sw3dh"
 
 st.set_page_config(
     page_title="MSB - Quản Lý Khách Hàng",
@@ -16,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Chèn HTML Meta Tags để tạo thumbnail xem trước khi gửi link
+# Chèn HTML Meta Tags để tạo thumbnail xem trước khi gửi link Zalo/Messenger/FB
 st.markdown(
     f"""
     <head>
@@ -54,10 +56,14 @@ if "customer_data" not in st.session_state:
     st.session_state.customer_data = load_data()
 
 # ---------------------------------------------------------
-# 1. SIDEBAR (THANH MENU BÊN TRÁI HIỂN THỊ LOGO MSB)
+# 1. SIDEBAR (THANH MENU BÊN TRÁI)
 # ---------------------------------------------------------
 with st.sidebar:
-    st.image(IMAGE_URL_MSB, use_container_width=True)
+    try:
+        st.image(IMAGE_URL_MSB, use_container_width=True)
+    except Exception:
+        st.write("🏦 **NGÂN HÀNG MSB**")
+        
     st.markdown("<h3 style='text-align: center;'>Hệ thống MSB Lead</h3>", unsafe_allow_html=True)
     st.write("---")
     
@@ -77,18 +83,18 @@ with st.sidebar:
     st.caption("MSB Lead Manager - Nhóm Ngọc Yên\nPhát triển cho Khối KHCN MSB")
 
 # ---------------------------------------------------------
-# 2. MÀN HÌNH CHÍNH (XỬ LÝ THEO MENU)
+# 2. MÀN HÌNH CHÍNH
 # ---------------------------------------------------------
 if menu == "➕ Thêm Lead mới":
-    # TIÊU ĐỀ CHÍNH & LOGO
+    # TIÊU ĐỀ CHÍNH
     st.markdown(
-        "<h1 style='text-align: center; color: #E31837; font-weight: bold;'>NGÂN HÀNG MSB</h1>",
+        "<h1 style='text-align: center; color: #EB1C24; font-weight: bold;'>NGÂN HÀNG MSB</h1>",
         unsafe_allow_html=True,
     )
 
     tab_form, tab_admin = st.tabs(["📝 Form Điền Thông Tin", "🔒 Trang Admin"])
 
-    # TAB 1: FORM
+    # TAB 1: FORM DỮ LIỆU
     with tab_form:
         st.header("Thông Tin Khách Hàng")
 
@@ -138,7 +144,7 @@ if menu == "➕ Thêm Lead mới":
                     save_data(st.session_state.customer_data)
                     st.success("Đã lưu thông tin khách hàng thành công vào file Excel!")
 
-    # TAB 2: ADMIN
+    # TAB 2: TRANG ADMIN
     with tab_admin:
         st.header("Quản Lý Dữ Liệu Khách Hàng")
         pin_input = st.text_input(
